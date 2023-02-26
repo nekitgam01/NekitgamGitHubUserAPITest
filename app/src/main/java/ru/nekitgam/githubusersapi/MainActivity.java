@@ -1,9 +1,5 @@
 package ru.nekitgam.githubusersapi;
-
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
@@ -11,23 +7,27 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import java.util.Objects;
-
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import ru.nekitgam.githubusersapi.api.ApiService;
+import ru.nekitgam.githubusersapi.dynamic.UserClass;
 
 public class MainActivity extends AppCompatActivity {
 
     public EditText etSearch;
+    public ArrayList<UserClass> userList = new ArrayList<>();
+
+    public LinearLayout llDataList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
         //Привязка кнопки из активности к переменной
         etSearch = findViewById(R.id.etSearch);
+
+        //Привязка Линейки за активности к переменной
+        llDataList = findViewById(R.id.llDataList);
     }
 
     /*
@@ -94,16 +97,38 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<String> call, Response<String> response) {
                 String responseString = response.body();
                 if (responseString!=null) {
-                    Toast.makeText(MainActivity.this, responseString, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(MainActivity.this, responseString, Toast.LENGTH_LONG).show();
+                    try {
+                        JSONObject obj = new JSONObject(responseString);
+
+                        JSONArray array = obj.getJSONArray("items");
+
+                        userList.clear();
+                        llDataList.removeAllViews();
+
+                        for (int i=0;i<array.length();i++)
+                        {
+                            String imgLink = array.getJSONObject(i).getString("avatar_url");
+                            String name = array.getJSONObject(i).getString("login");
+                            Integer followers = 0; //
+                            UserClass uClass = new UserClass(MainActivity.this, name, followers, imgLink);
+                            userList.add(uClass);
+
+                            llDataList.addView(userList.get(userList.size() - 1).line);
+                        }
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 else {
-                    Toast.makeText(MainActivity.this, "Никого не найдено", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Пользователь не найден!", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Toast.makeText(MainActivity.this, call.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Проверьте интернет подключение!", Toast.LENGTH_LONG).show();
             }
         });
     }
