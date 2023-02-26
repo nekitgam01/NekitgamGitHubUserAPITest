@@ -14,5 +14,5 @@ public interface ApiService {
     Call<String> getFollowersForUser(@Path("user") String user);
 
     @GET("users/{user}/repos")
-    Call<String> getReposForUser(@Query("user") String user);
+    Call<String> getReposForUser(@Path("user") String user);
 }
