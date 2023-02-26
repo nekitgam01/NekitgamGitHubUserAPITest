@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,9 +26,14 @@ import ru.nekitgam.githubusersapi.dynamic.UserClass;
 public class MainActivity extends AppCompatActivity {
 
     public EditText etSearch;
+
+    public Switch swFollow;
     public ArrayList<UserClass> userList = new ArrayList<>();
 
     public LinearLayout llDataList;
+
+    public long backPressedTime = 0;
+    public long backPressedTimeSearch = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +46,27 @@ public class MainActivity extends AppCompatActivity {
         //Привязка кнопки из активности к переменной
         etSearch = findViewById(R.id.etSearch);
 
+        //Привязка выключателя из активности к переменной
+        swFollow = findViewById(R.id.swFollow);
+
         //Привязка Линейки за активности к переменной
         llDataList = findViewById(R.id.llDataList);
+    }
+
+    /*
+     * Функция предостережения от случайного нажатия "назад". Закрывает приложение только при
+     * двойном нажатии кнопки "назад"
+     */
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + 3000 > System.currentTimeMillis()) {
+            super.onBackPressed();
+            finishAffinity();
+            System.exit(0);
+        } else {
+            Toast.makeText(this, "Нажмите еще раз \"назад\" для выхода!", Toast.LENGTH_LONG).show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 
     /*
@@ -76,7 +101,20 @@ public class MainActivity extends AppCompatActivity {
      * Данная функция отвечает за нажатие кнопки поиска пользователей
      */
     public void buttonSearchClick(View view) {
-        GetUserListAData();
+        if (swFollow.isChecked()) {
+            if (backPressedTimeSearch + 11000 > System.currentTimeMillis()) {
+                Toast.makeText(this, "Следующая попытка только через 10 секунд!", Toast.LENGTH_LONG).show();
+            } else {
+                GetUserListAData();
+                if (!etSearch.getText().toString().equals("")) {
+                    backPressedTimeSearch = System.currentTimeMillis();
+                }
+            }
+        }
+        else {
+            GetUserListAData();
+        }
+
     }
 
     /*
@@ -90,7 +128,24 @@ public class MainActivity extends AppCompatActivity {
 
         ApiService service = retrofit.create(ApiService.class);
 
-        Call<String> stringCall = service.getSearchUsers(etSearch.getText().toString());
+        /*
+         * Так как гитхаб ограничивает количество запросов к api до 60 в час минут,
+         * пришлось ограничить количество пользователей в ответе сервера (до 3), чтобы
+         * не запрашивать фолловеров у пользователей больше 3 раз в секунду (при этом
+         * огрничение по времени добавлено на кнопку - запрос раз в 11 секунд.).
+         * Чтобы запросить до 30 пользователей без фолловеров в любое время -
+         * вверху активти добавлена галочка "Запрашивать количество фолловеров". Убрав
+         * ее - можно запрашивать чаще, но количества фолловеров не будет показано!
+         * Окончание запросов к GitHub (60 в час) приведет к тому, что апи работать не будет,
+         * Придется ждать окончания часа. Открытие записи тоже забирает 2 запроса из 60.
+         */
+        Call<String> stringCall;
+        if (swFollow.isChecked()){
+            stringCall = service.getSearchUsers(etSearch.getText().toString(), 3);
+        }
+        else {
+            stringCall = service.getSearchUsers(etSearch.getText().toString(), 30);
+        }
         // Обрабатываем ответ от сервера тут
         stringCall.enqueue(new Callback<String>() {
             @Override
@@ -110,8 +165,8 @@ public class MainActivity extends AppCompatActivity {
                         {
                             String imgLink = array.getJSONObject(i).getString("avatar_url");
                             String name = array.getJSONObject(i).getString("login");
-                            Integer followers = 0; //
-                            UserClass uClass = new UserClass(MainActivity.this, name, followers, imgLink);
+
+                            UserClass uClass = new UserClass(MainActivity.this, name, imgLink,swFollow.isChecked());
                             userList.add(uClass);
 
                             llDataList.addView(userList.get(userList.size() - 1).line);

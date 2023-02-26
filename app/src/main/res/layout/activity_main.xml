@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <Switch
+        android:id="@+id/swFollow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/on_followers"
+        tools:checked="true" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
