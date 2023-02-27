@@ -1,5 +1,6 @@
 package ru.nekitgam.githubusersapi.dynamic;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.Gravity;
 import android.widget.LinearLayout;
@@ -7,6 +8,10 @@ import android.widget.TextView;
 
 import ru.nekitgam.githubusersapi.R;
 
+
+/*
+ * Класс для динамического создания списка данных о репозитории
+ */
 public class RepoClass {
     public LinearLayout line;
 
@@ -19,6 +24,7 @@ public class RepoClass {
     public TextView forks;
     public TextView programmingLanguage;
 
+    @SuppressLint("SetTextI18n")
     public RepoClass(Context context, String rName, String rDescription, String rDate,
                      String rBranch, String rStars, String rForks, String rPL) {
         line = new LinearLayout(context);

@@ -21,6 +21,9 @@ import ru.nekitgam.githubusersapi.R;
 import ru.nekitgam.githubusersapi.UserInfoActivity;
 import ru.nekitgam.githubusersapi.api.ApiService;
 
+/*
+ * Класс для динамического создания списка данных о пользователях
+ */
 public class UserClass {
     public LinearLayout line;
     public Button userInfo;
@@ -40,12 +43,9 @@ public class UserClass {
             userInfo.setText(" "+name);
         }
 
-
         line.setVerticalGravity(Gravity.CENTER);
         line.setHorizontalGravity(Gravity.LEFT);
         line.setBackgroundResource(R.drawable.border_dark_gray);
-
-
 
         LinearLayout.LayoutParams p1 = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -86,7 +86,9 @@ public class UserClass {
     }
 
 
-
+    /*
+     * Функция для запроса списка фоловеров и с подсчетом их
+     */
     public void GetFollowers(String name, Context context) {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(ScalarsConverterFactory.create())

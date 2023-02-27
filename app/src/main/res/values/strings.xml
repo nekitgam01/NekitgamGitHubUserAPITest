@@ -4,6 +4,19 @@
     <string name="search_text">Найти</string>
 
     <string name="menu_auth">Войти</string>
+    <string name="menu_unauth">Выйти</string>
+
     <string name="on_followers">Запрашивать количество фолловеров</string>
+
+    <string name="login">Войти</string>
+    <string name="save">Запомнить</string>
+    <string name="open_github">Открыть настройки GitHub</string>
+    <string name="copy_token">Скопируйте токен сюда</string>
+    <string name="label_token">Личный токен (можно создать в настройках GitHub)а</string>
+
+    <string name="about_caption">Информация о Вас</string>
+    <string name="login_caption">Авторизация</string>
+    <string name="main_caption">Поиск пользователя</string>
+    <string name="user_caption">Репозитории пользователя</string>
 
 </resources>

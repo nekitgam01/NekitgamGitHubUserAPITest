@@ -44,6 +44,9 @@ public class UserInfoActivity extends AppCompatActivity {
         GetRepoListData();
     }
 
+    /*
+     * Функция отправки запроса и получения ответа данных о репозиториях пользователя
+     */
     public void GetRepoListData() {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(ScalarsConverterFactory.create())

@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".AboutActivity">
+    <item
+        android:id="@+id/action_unauth"
+        android:orderInCategory="100"
+        android:title="@string/menu_unauth"
+        android:icon="@android:drawable/ic_lock_idle_lock"
+        app:showAsAction="always"/>
+</menu>
